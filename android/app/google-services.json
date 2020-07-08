@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "710185752199",
+    "firebase_url": "https://social-2-e4146.firebaseio.com",
+    "project_id": "social-2-e4146",
+    "storage_bucket": "social-2-e4146.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710185752199:android:36d3f19c731dec31534a22",
+        "android_client_info": {
+          "package_name": "com.pableboo.newsocialmedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "710185752199-s5goigegcfa6sanvooj84evqfj7ud0gm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pableboo.newsocialmedia",
+            "certificate_hash": "2c7e19d76d600cc8e845ce1f7d5eede856cc2a2f"
+          }
+        },
+        {
+          "client_id": "710185752199-td81i9gjgelgl5m1me8k1nl5oeh5695s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHuAYjcurSwd8MMEHaSXzG-o1nqtXD2_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "710185752199-td81i9gjgelgl5m1me8k1nl5oeh5695s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

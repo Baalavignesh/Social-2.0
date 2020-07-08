@@ -20,7 +20,7 @@ class BottomButton extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 80),
             child: Text(
               buttonText,
-              style: kTextStyle,
+              style: kTextStyle.copyWith(fontSize: 16),
             ),
           ),
         ),

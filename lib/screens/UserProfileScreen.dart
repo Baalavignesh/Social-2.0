@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:newsocialmedia/screens/SinglePostScreen.dart';
 import 'package:newsocialmedia/services/constants.dart';
 
-import 'package:flutter/scheduler.dart';
-import 'package:animations/animations.dart';
 import 'package:newsocialmedia/tabs/PostTab.dart';
 import 'package:newsocialmedia/tabs/TimelineTab.dart';
-import 'package:page_transition/page_transition.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static const String id = 'UserProfileScreen';

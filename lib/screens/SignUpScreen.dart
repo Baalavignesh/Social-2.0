@@ -1,11 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:newsocialmedia/reusables/InputBox.dart';
 import 'package:newsocialmedia/reusables/bottomButton.dart';
-import 'package:newsocialmedia/screens/CategoryScreen.dart';
-import 'package:newsocialmedia/screens/WelcomeScreen.dart';
+import 'package:newsocialmedia/services/MailAuth.dart';
 import 'package:newsocialmedia/services/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String id = 'SignUpScreen';
@@ -45,9 +43,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-//      backgroundColor: Color(0xFF403F68),
+      resizeToAvoidBottomInset: false,
       body: AnimatedContainer(
         duration: _animationDuration,
         decoration: BoxDecoration(
@@ -73,39 +77,92 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 20),
-                  child: Text('New Social',
-                      style: kTextStyle.copyWith(fontSize: 40)),
+                  child: Text(
+                    'New Social',
+                    style: kTextStyle.copyWith(fontSize: 40),
+                  ),
                 ),
               ],
             ),
             Column(
               children: <Widget>[
+                warning
+                    ? Text(errorMessages, style: kTextStyle.copyWith(fontSize: 18))
+                    : Text(' '),
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: InputTextField(
-                    hint: 'Name',
-                    icon: Icon(Icons.person),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.person),
+                      hintText: 'Name',
+                      hintStyle: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      zUsername = value;
+                    },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: InputTextField(
-                    hint: 'Mail ID',
-                    icon: Icon(Icons.mail),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.mail),
+                      hintText: 'Mail ID',
+                      hintStyle: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      nEmail = value;
+                    },
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: InputTextField(
-                    hint: 'Password',
-                    icon: Icon(Icons.lock),
+                  child: TextField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.lock),
+                      hintText: 'Password',
+                      hintStyle: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      nPassword = value;
+                    },
                   ),
                 ),
                 Column(
                   children: <Widget>[
                     BottomButton(
-                      onPress: () {
-                        Navigator.pushNamed(context, CategoryScreen.id);
+                      onPress: () async {
+                        print('$zUsername $nEmail $nPassword');
+                        if (zUsername != null &&
+                            nEmail != null &&
+                            nPassword != null &&
+                            zUsername != " ") {
+                          print("ah yes");
+                          SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                          prefs.setString('username', zUsername);
+                          errorMessages = await AuthService().createAccount(context);
+                          if (errorMessages != "Verify Email") {
+                            print('some error is there');
+                            print(errorMessages);
+                            warning = true;
+                          } else {
+                            print('No error. Verify the mail');
+                            Navigator.pop(context);
+                          }
+                        } else {
+                          setState(() {
+                            warning = true;
+                            errorMessages = "Enter the Details";
+                          });
+                        }
                       },
                       buttonText: 'Sign up',
                     ),
@@ -120,7 +177,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, WelcomeScreen.id);
+                              Navigator.pop(context);
                             },
                             child: Text(
                               'Sign in',

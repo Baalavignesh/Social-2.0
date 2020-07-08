@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:newsocialmedia/reusables/CategoryBox.dart';
 import 'package:newsocialmedia/reusables/bottomButton.dart';
+import 'package:newsocialmedia/screens/LoadingScreen.dart';
 import 'package:newsocialmedia/screens/MainRoutePage.dart';
 import 'package:newsocialmedia/services/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CategoryScreen extends StatefulWidget {
   static const String id = 'CategoryScreen';
@@ -24,35 +27,71 @@ enum Category {
   sports,
   fashion,
 }
+bool gaming = false;
+bool book = false;
+bool movies = false;
+bool coding = false;
+bool music = false;
+bool jc = false;
+bool art = false;
+bool jobs = false;
+bool psve = false;
+bool fashion = false;
+bool sport = false;
 bool moreCategory = false;
 
+createVariable() {
+  print('Create Variable Functiion');
+  gaming = false;
+  book = false;
+  movies = false;
+  coding = false;
+  music = false;
+  jc = false;
+  art = false;
+  jobs = false;
+  psve = false;
+  fashion = false;
+  sport = false;
+  moreCategory = false;
+  zCategory = [];
+}
+
 listItems() {
+  print('Updating Interest');
+  zCategory = [];
   if (gaming == true) {
-    category.add('Gaming');
+    zCategory.add('Gaming');
   }
   if (book == true) {
-    category.add('Book');
+    zCategory.add('Book');
   }
   if (movies == true) {
-    category.add('Movies');
+    zCategory.add('Movies');
   }
   if (coding == true) {
-    category.add('Coding');
+    zCategory.add('Coding');
   }
   if (music == true) {
-    category.add('Music');
+    zCategory.add('Music');
   }
   if (jc == true) {
-    category.add('Just Chatting');
+    zCategory.add('Just Chatting');
   }
   if (art == true) {
-    category.add('Just Chatting');
+    zCategory.add('Art');
   }
   if (psve == true) {
-    category.add('Editing');
+    zCategory.add('Editing');
   }
   if (jobs == true) {
-    category.add('Jobs');
+    zCategory.add('Jobs');
+  }
+  if (sport == true) {
+    zCategory.add('Sports');
+  }
+  if (fashion == true) {
+    zCategory.add('Fashion');
   }
 }
 
@@ -83,13 +122,57 @@ class _CategoryScreenState extends State<CategoryScreen> {
     kBackgroundBottom = Color(0xFF011627);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    backgroundAnimation();
+  getData() async {
+    print('Get Data FUnction');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    zCategory = (prefs.getStringList('category'));
+    print(zCategory);
+    print('$zUsername and $zUserMail and $zCategory');
+    if (zCategory != null) {
+      for (var i in zCategory) {
+        print('Category : $i');
+        setState(() {
+          moreCategory = true;
+          if (i == "Gaming") {
+            gaming = true;
+          }
+          if (i == "Book") {
+            book = true;
+          }
+          if (i == "Movies") {
+            movies = true;
+          }
+          if (i == "Coding") {
+            coding = true;
+          }
+          if (i == "Music") {
+            music = true;
+          }
+          if (i == "Just Chatting") {
+            jc = true;
+          }
+          if (i == "Art") {
+            art = true;
+          }
+          if (i == "Editing") {
+            psve = true;
+          }
+          if (i == "Jobs") {
+            jobs = true;
+          }
+        });
+        print(i);
+      }
+      print('$gaming $book $movies $coding $music $jc $art $psve $jobs');
+      print(jc);
+    } else {
+      print('Empty Category');
+      zCategory = [];
+    }
   }
 
   selectedCategory(Category selected) {
+    print(zCategory);
     setState(() {
       if (selected == Category.gaming) {
         gaming = gaming ? false : true;
@@ -128,7 +211,23 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    print('Category Screen');
+    createVariable();
+    getData();
+    backgroundAnimation();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final _store = Firestore.instance;
     return Scaffold(
       body: SingleChildScrollView(
         child: AnimatedContainer(
@@ -151,8 +250,10 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(30, 60, 30, 15),
                       child: Text(
-                        'Choose your point of interest',
-                        style: kTextStyle.copyWith(fontSize: 30),
+                        secondTime
+                            ? 'Update your point of interest'
+                            : 'Choose your point of interest',
+                        style: kTextStyle.copyWith(fontSize: 24),
                       ),
                     ),
                   ),
@@ -305,12 +406,32 @@ class _CategoryScreenState extends State<CategoryScreen> {
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 40),
                       child: BottomButton(
-                        buttonText: 'Next',
-                        onPress: () {
-                          listItems();
+                        buttonText: secondTime ? 'Update Interest' : 'Next',
+                        onPress: () async {
+                          await listItems();
                           //Navigate Here
-                          print(category);
-                          Navigator.pushNamed(context, MainRoutePage.id);
+//                          print(category);
+                          if (secondTime == false) {
+                            await _store.collection('Users').add({
+                              'mail': zUserMail,
+                              'username': zUsername,
+                              'category': zCategory,
+                            });
+                            Navigator.pushReplacementNamed(
+                                context, LoadingScreen.id);
+                          } else {
+                            print('second time. Merging');
+                            print(zDocumentID);
+                            print(zCategory);
+                            await _store
+                                .collection('Users')
+                                .document(zDocumentID)
+                                .updateData({'category': zCategory});
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setStringList('category', zCategory);
+                            Navigator.pop(context);
+                          }
                         },
                       ),
                     ),

@@ -1,13 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:newsocialmedia/screens/CategoryScreen.dart';
+import 'package:newsocialmedia/screens/FriendsListScreen.dart';
 import 'package:newsocialmedia/screens/FriendsPostScreen.dart';
 import 'package:newsocialmedia/screens/MapScreen.dart';
 import 'package:newsocialmedia/screens/PublicPostScreen.dart';
-import 'package:newsocialmedia/screens/SignUpScreen.dart';
 import 'package:newsocialmedia/screens/UserProfileScreen.dart';
 import 'package:newsocialmedia/screens/WelcomeScreen.dart';
+import 'package:newsocialmedia/services/MailAuth.dart';
 import 'package:newsocialmedia/services/constants.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:location/location.dart';
+import 'package:geocoder/geocoder.dart';
 
 class MainRoutePage extends StatefulWidget {
   static const String id = 'MainRoutePage';
@@ -18,23 +24,85 @@ class MainRoutePage extends StatefulWidget {
 class _MainRoutePageState extends State<MainRoutePage>
     with SingleTickerProviderStateMixin {
   TabController controller;
-  ScrollController _scrollController;
-  bool scrollDirection;
+  final _store = Firestore.instance;
+  getData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    zUsername = (prefs.getString('username'));
+    zUserMail = (prefs.getString('mail'));
+    zDocumentID = (prefs.getString('documentid'));
+    zLatitude = (prefs.getDouble('latitude'));
+    zLongitude = (prefs.getDouble('longitude'));
+    zCountry = (prefs.getString('country'));
+    zDistrict = (prefs.getString('district'));
+    zState = (prefs.getString('state'));
+    print(zDocumentID);
+  }
+
+  askLocation() async {
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+    print(_locationData);
+
+    //Getting Address
+
+    final coordinates =
+        new Coordinates(_locationData.latitude, _locationData.longitude);
+    var addresses =
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var first = addresses.first;
+    print(
+        "${first.featureName} : ${first.addressLine} : ${first.subLocality} : ${first.subAdminArea} : ${first.adminArea} : ${first.countryName}");
+
+    print(_locationData.longitude.runtimeType);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    try {
+      if (_locationData != null) {
+        await _store.collection('Users').document(zDocumentID).updateData({
+          'lattitude': _locationData.latitude,
+          'longitude': _locationData.longitude,
+          'district': first.subAdminArea,
+          'state': first.adminArea,
+          'country': first.countryName,
+        });
+        prefs.setDouble('lattitude', _locationData.latitude);
+        prefs.setDouble('longitude', _locationData.longitude);
+        prefs.setString('district', first.subAdminArea);
+        prefs.setString('country', first.countryName);
+        prefs.setString('state', first.adminArea);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    print('inside');
-
     controller = TabController(vsync: this, length: 3);
-    _scrollController = ScrollController()
-      ..addListener(() {
-        print('please');
-        scrollDirection = _scrollController.position.userScrollDirection ==
-            ScrollDirection.forward;
-        print('hello');
-        print(scrollDirection);
-      });
+    print('MainRoutePage Screen');
+    getData();
+    askLocation();
   }
 
   @override
@@ -46,15 +114,9 @@ class _MainRoutePageState extends State<MainRoutePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kDarkBackground,
       appBar: AppBar(
-//        leading: IconButton(
-//          icon: Icon(
-//            Icons.menu,
-//            color: Colors.white,
-//          ),
-//        ),
         backgroundColor: kDarkBackground,
-
         title: Image.asset(
           'images/logomain.png',
           fit: BoxFit.contain,
@@ -64,7 +126,9 @@ class _MainRoutePageState extends State<MainRoutePage>
         actions: <Widget>[
           new IconButton(
             icon: new Icon(Icons.search),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, MainRoutePage.id);
+            },
           ),
           new IconButton(
             icon: new Icon(Icons.mail),
@@ -157,12 +221,12 @@ class _MainRoutePageState extends State<MainRoutePage>
                           Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Text(
-                              "Baalavignesh Arunachalam",
+                              zUsername,
                               style: kTextStyle.copyWith(fontSize: 19),
                             ),
                           ),
                           Text(
-                            "baalavignesh21@gmail.com",
+                            zUserMail,
                             style: kTextStyle.copyWith(fontSize: 15),
                           ),
                         ],
@@ -171,16 +235,26 @@ class _MainRoutePageState extends State<MainRoutePage>
                   ),
                   ListTile(
                       title: ListData(text: 'Home', icon: Icon(Icons.home))),
-                  ListTile(
-                      title:
-                          ListData(text: 'Friends', icon: Icon(Icons.people))),
-                  ListTile(
-                      title: ListData(
-                          text: 'Find People', icon: Icon(Icons.explore))),
-                  ListTile(
-                      title: ListData(
-                          text: 'My Interest',
-                          icon: Icon(Icons.playlist_add_check))),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, FriendsListScreen.id);
+                    },
+                    child: ListTile(
+                        title: ListData(
+                            text: 'Friends', icon: Icon(Icons.people))),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        secondTime = true;
+                      });
+                      Navigator.pushNamed(context, CategoryScreen.id);
+                    },
+                    child: ListTile(
+                        title: ListData(
+                            text: 'My Interest',
+                            icon: Icon(Icons.playlist_add_check))),
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(context, UserProfileScreen.id);
@@ -192,6 +266,20 @@ class _MainRoutePageState extends State<MainRoutePage>
                   ListTile(
                       title: ListData(
                           text: 'Settings', icon: Icon(Icons.settings))),
+                  GestureDetector(
+                    onTap: () async {
+                      AuthService().signOut();
+                      secondTime = false;
+                      SharedPreferences preferences =
+                          await SharedPreferences.getInstance();
+                      preferences.clear();
+                      Navigator.pushReplacementNamed(context, WelcomeScreen.id);
+                    },
+                    child: ListTile(
+                        title: ListData(
+                            text: 'Logout',
+                            icon: FaIcon(FontAwesomeIcons.signOutAlt))),
+                  ),
                 ],
               )
             ],
@@ -212,6 +300,8 @@ class _MainRoutePageState extends State<MainRoutePage>
     );
   }
 }
+
+// Drawer Stuffs
 
 class ListData extends StatelessWidget {
   final text;

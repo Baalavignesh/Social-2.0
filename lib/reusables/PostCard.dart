@@ -22,7 +22,7 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(5),
         child: Material(
           borderRadius: BorderRadius.circular(20),
           color: kDarkBackground,
@@ -34,7 +34,7 @@ class PostCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 color: kDarkBackground,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -45,16 +45,20 @@ class PostCard extends StatelessWidget {
                               width: 50,
                               child: Image.asset('images/logomain.png')),
                           Padding(
-                            padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                            child: Text(name,
-                                style: kTextStyle.copyWith(
-                                    fontSize: 20, fontWeight: FontWeight.w900)),
-                          ),
+                            padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+                            child: Text(
+                              name,
+                              style: kTextStyle.copyWith(
+                                  fontSize: 16, fontWeight: FontWeight.w900),
+                            ),
+                          )
                         ],
                       ),
-                      Text('21st Aug 2020, 10:32 PM',
-                          style: kTextStyle.copyWith(
-                              fontSize: 12, fontWeight: FontWeight.w900)),
+                      Text(
+                        '21st Aug 2020, 10:32 PM',
+                        style: kTextStyle.copyWith(
+                            fontSize: 12, fontWeight: FontWeight.w900),
+                      ),
                     ],
                   ),
                 ),
@@ -102,18 +106,18 @@ class PostCard extends StatelessWidget {
               ),
               Container(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
                   child: Row(
                     children: <Widget>[
                       Row(
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
                             child: Container(
-                              height: MediaQuery.of(context).size.height / 18,
-                              width: MediaQuery.of(context).size.height / 18,
+                              height: MediaQuery.of(context).size.height / 20,
+                              width: MediaQuery.of(context).size.height / 20,
                               decoration: BoxDecoration(
-                                color: kDarkBackground,
+                                color: Color(0xFF263859),
                                 borderRadius: BorderRadius.circular(40),
                               ),
                               child: Icon(
@@ -124,19 +128,22 @@ class PostCard extends StatelessWidget {
                           ),
                           Text(
                             '370',
-                            style: kTextStyle.copyWith(fontSize: 15),
+                            style: kTextStyle.copyWith(fontSize: 14),
                           ),
                         ],
+                      ),
+                      SizedBox(
+                        width: 10,
                       ),
                       Row(
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.fromLTRB(0, 5, 10, 5),
                             child: Container(
                                 height: MediaQuery.of(context).size.height / 18,
                                 width: MediaQuery.of(context).size.height / 18,
                                 decoration: BoxDecoration(
-                                  color: kDarkBackground,
+                                  color: Color(0xFF263859),
                                   borderRadius: BorderRadius.circular(40),
                                 ),
                                 child: Icon(
@@ -146,7 +153,7 @@ class PostCard extends StatelessWidget {
                           ),
                           Text(
                             '38',
-                            style: kTextStyle.copyWith(fontSize: 15),
+                            style: kTextStyle.copyWith(fontSize: 14),
                           ),
                         ],
                       ),
@@ -156,13 +163,12 @@ class PostCard extends StatelessWidget {
               ),
               Container(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+                  padding: const EdgeInsets.fromLTRB(5, 5, 5, 10),
                   child: Column(
                     children: <Widget>[
                       Text(
                         caption,
-                        style: kTextStyle.copyWith(fontSize: 18),
-                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(fontSize: 15),
                       ),
                     ],
                   ),
