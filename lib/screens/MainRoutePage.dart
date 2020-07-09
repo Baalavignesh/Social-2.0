@@ -7,7 +7,7 @@ import 'package:newsocialmedia/screens/FriendsListScreen.dart';
 import 'package:newsocialmedia/screens/FriendsPostScreen.dart';
 import 'package:newsocialmedia/screens/MapScreen.dart';
 import 'package:newsocialmedia/screens/PublicPostScreen.dart';
-import 'package:newsocialmedia/screens/UserProfileScreen.dart';
+import 'package:newsocialmedia/screens/UserProfileScreenNearMe.dart';
 import 'package:newsocialmedia/screens/WelcomeScreen.dart';
 import 'package:newsocialmedia/services/MailAuth.dart';
 import 'package:newsocialmedia/services/constants.dart';
@@ -29,6 +29,7 @@ class _MainRoutePageState extends State<MainRoutePage>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     zUsername = (prefs.getString('username'));
     zUserMail = (prefs.getString('mail'));
+    zCategory = (prefs.getStringList('category'));
     zDocumentID = (prefs.getString('documentid'));
     zLatitude = (prefs.getDouble('latitude'));
     zLongitude = (prefs.getDouble('longitude'));
@@ -36,6 +37,9 @@ class _MainRoutePageState extends State<MainRoutePage>
     zDistrict = (prefs.getString('district'));
     zState = (prefs.getString('state'));
     print(zDocumentID);
+    print(zCategory);
+    height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
   }
 
   askLocation() async {
@@ -257,7 +261,7 @@ class _MainRoutePageState extends State<MainRoutePage>
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, UserProfileScreen.id);
+                      Navigator.pushNamed(context, UserProfileScreenNearMe.id);
                     },
                     child: ListTile(
                         title: ListData(

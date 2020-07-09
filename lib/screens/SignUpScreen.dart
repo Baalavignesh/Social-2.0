@@ -50,149 +50,158 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: AnimatedContainer(
-        duration: _animationDuration,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [kBackgroundTop, kBackgroundBottom]),
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        body: AnimatedContainer(
+          duration: _animationDuration,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [kBackgroundTop, kBackgroundBottom]),
 //          color: ,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  height: 120,
-                  width: 120,
-                  child: Hero(
-                    tag: 'logo',
-                    child: Image.asset('images/logomain.png'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Text(
-                    'New Social',
-                    style: kTextStyle.copyWith(fontSize: 40),
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              children: <Widget>[
-                warning
-                    ? Text(errorMessages, style: kTextStyle.copyWith(fontSize: 18))
-                    : Text(' '),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.person),
-                      hintText: 'Name',
-                      hintStyle: TextStyle(
-                        fontSize: 20,
-                      ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    height: 120,
+                    width: 120,
+                    child: Hero(
+                      tag: 'logo',
+                      child: Image.asset('images/logomain.png'),
                     ),
-                    onChanged: (value) {
-                      zUsername = value;
-                    },
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.mail),
-                      hintText: 'Mail ID',
-                      hintStyle: TextStyle(
-                        fontSize: 20,
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Text(
+                      'New Social',
+                      style: kTextStyle.copyWith(fontSize: 40),
                     ),
-                    onChanged: (value) {
-                      nEmail = value;
-                    },
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
-                      hintText: 'Password',
-                      hintStyle: TextStyle(
-                        fontSize: 20,
+                ],
+              ),
+              Column(
+                children: <Widget>[
+                  warning
+                      ? Text(errorMessages,
+                          style: kTextStyle.copyWith(fontSize: 18))
+                      : Text(' '),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.person),
+                        hintText: 'Name',
+                        hintStyle: TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                    onChanged: (value) {
-                      nPassword = value;
-                    },
-                  ),
-                ),
-                Column(
-                  children: <Widget>[
-                    BottomButton(
-                      onPress: () async {
-                        print('$zUsername $nEmail $nPassword');
-                        if (zUsername != null &&
-                            nEmail != null &&
-                            nPassword != null &&
-                            zUsername != " ") {
-                          print("ah yes");
-                          SharedPreferences prefs =
-                              await SharedPreferences.getInstance();
-                          prefs.setString('username', zUsername);
-                          errorMessages = await AuthService().createAccount(context);
-                          if (errorMessages != "Verify Email") {
-                            print('some error is there');
-                            print(errorMessages);
-                            warning = true;
-                          } else {
-                            print('No error. Verify the mail');
-                            Navigator.pop(context);
-                          }
-                        } else {
-                          setState(() {
-                            warning = true;
-                            errorMessages = "Enter the Details";
-                          });
-                        }
+                      onChanged: (value) {
+                        zUsername = value;
                       },
-                      buttonText: 'Sign up',
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Already an user? ',
-                            style: kTextStyle,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text(
-                              'Sign in',
-                              style:
-                                  kTextStyle.copyWith(color: Colors.blueAccent),
-                            ),
-                          ),
-                        ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.mail),
+                        hintText: 'Mail ID',
+                        hintStyle: TextStyle(
+                          fontSize: 20,
+                        ),
                       ),
-                    )
-                  ],
-                )
-              ],
-            ),
-          ],
+                      onChanged: (value) {
+                        nEmail = value;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: TextField(
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.lock),
+                        hintText: 'Password',
+                        hintStyle: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      onChanged: (value) {
+                        nPassword = value;
+                      },
+                    ),
+                  ),
+                  Column(
+                    children: <Widget>[
+                      BottomButton(
+                        onPress: () async {
+                          print('$zUsername $nEmail $nPassword');
+                          if (zUsername != null &&
+                              nEmail != null &&
+                              nPassword != null &&
+                              zUsername != " ") {
+                            print("ah yes");
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+                            prefs.setString('username', zUsername);
+                            errorMessages =
+                                await AuthService().createAccount(context);
+                            if (errorMessages != "Verify Email") {
+                              print('some error is there');
+                              print(errorMessages);
+                              warning = true;
+                            } else {
+                              print('No error. Verify the mail');
+                              Navigator.pop(context);
+                            }
+                          } else {
+                            setState(() {
+                              warning = true;
+                              errorMessages = "Enter the Details";
+                            });
+                          }
+                        },
+                        buttonText: 'Sign up',
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              'Already an user? ',
+                              style: kTextStyle,
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'Sign in',
+                                style: kTextStyle.copyWith(
+                                    color: Colors.blueAccent),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
