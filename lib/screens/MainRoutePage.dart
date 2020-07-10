@@ -38,8 +38,8 @@ class _MainRoutePageState extends State<MainRoutePage>
     zState = (prefs.getString('state'));
     print(zDocumentID);
     print(zCategory);
-    height = MediaQuery.of(context).size.height;
-    width = MediaQuery.of(context).size.width;
+    sHeight = MediaQuery.of(context).size.height;
+    sWidth = MediaQuery.of(context).size.width;
   }
 
   askLocation() async {

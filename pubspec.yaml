@@ -24,6 +24,9 @@ dependencies:
   geocoder: ^0.2.1
   google_maps_flutter: ^0.5.28+1
   flutter_spinkit: ^4.1.2+1
+  image_picker: ^0.6.7+1
+  firebase_storage: ^3.1.6
+
 
 
 

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 // Variable Reference
 // uVariable - NearMe People
@@ -12,8 +13,8 @@ TextStyle kTextStyle = TextStyle(fontSize: 14, fontFamily: 'Avenir');
 Color selectedCard = Colors.blueGrey;
 Color kBackground = Color(0xFF333B48);
 Color kDarkBackground = Color(0xFF011627);
-double height;
-double width;
+double sHeight;
+double sWidth;
 
 // Initial Constants of using User
 
@@ -26,6 +27,9 @@ String zDocumentID;
 List<String> zCategory = [];
 String zCountry, zState = 'Tamil Nadu', zDistrict = 'Chennai';
 double zLatitude, zLongitude;
+File zImageToBeUploaded;
+List<String> zSelected = [];
+String zCaption = ' ';
 
 String errorMessages = " ";
 bool warning = false;

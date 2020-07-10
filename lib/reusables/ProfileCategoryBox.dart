@@ -10,8 +10,8 @@ Container profileCategory(
     child: Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
       child: Container(
-        height: height / 8,
-        width: height / 8,
+        height: sHeight / 8,
+        width: sHeight / 8,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),

@@ -10,6 +10,7 @@ import 'package:newsocialmedia/screens/SignUpScreen.dart';
 import 'package:newsocialmedia/screens/UserProfileScreenNearMe.dart';
 import 'package:newsocialmedia/screens/UserProfileScreenRequest.dart';
 import 'package:newsocialmedia/screens/WelcomeScreen.dart';
+import 'screens2/CaptionAndImageScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: MainRoutePage(),
+      home: WelcomeScreen(),
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         SignUpScreen.id: (context) => SignUpScreen(),
@@ -38,7 +39,8 @@ class _MyAppState extends State<MyApp> {
         MapScreen.id: (context) => MapScreen(),
         FriendsListScreen.id: (context) => FriendsListScreen(),
         UserProfileScreenNearMe.id: (context) => UserProfileScreenNearMe(),
-        UserProfileScreenRequest.id : (context) => UserProfileScreenRequest(),
+        UserProfileScreenRequest.id: (context) => UserProfileScreenRequest(),
+        CaptionAndImageScreen.id: (context) => CaptionAndImageScreen(),
       },
     );
   }

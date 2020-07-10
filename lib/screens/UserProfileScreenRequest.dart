@@ -226,6 +226,12 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
                                           .document(myFriend)
                                           .delete();
 
+                                      _store
+                                          .collection('Users')
+                                          .where('mail', isEqualTo: zUserMail)
+                                          .getDocuments()
+                                          .then((value) =>
+                                              value.documents.remove(value));
                                       // Remove his Friend
                                       String removeHisFriend;
                                       print('reqadad $requestDocID');
