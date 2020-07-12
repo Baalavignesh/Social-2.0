@@ -58,8 +58,7 @@ class _UserProfileScreenNearMeState extends State<UserProfileScreenNearMe> {
 
   createList() {
     print('creating list');
-//    print(zCategory);
-//    print(uNearMe[clickedIndex]);
+
     String tempCategory;
 
     for (var i = 0; i < uNearMe[clickedIndex]['category'].length; i++) {

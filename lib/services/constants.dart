@@ -15,6 +15,7 @@ Color kBackground = Color(0xFF333B48);
 Color kDarkBackground = Color(0xFF011627);
 double sHeight;
 double sWidth;
+bool back = false;
 
 // Initial Constants of using User
 
@@ -30,12 +31,14 @@ double zLatitude, zLongitude;
 File zImageToBeUploaded;
 List<String> zSelected = [];
 String zCaption = ' ';
+List<Map<String, dynamic>> zMyPost = [];
 
 String errorMessages = " ";
 bool warning = false;
 bool secondTime = false;
 bool isMe = true;
 int clickedIndex;
+bool dialVisible = true;
 
 // Near Me People
 
@@ -55,3 +58,5 @@ List<Container> aFriendRequestList = [];
 
 List<Map<String, dynamic>> zFriends = [];
 List<String> zFriendsMail = [];
+List<String> zFriendsDocID = [];
+List<Map<String, dynamic>> zFriendsPost = [];

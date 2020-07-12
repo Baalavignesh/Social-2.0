@@ -18,7 +18,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   final _store = Firestore.instance;
   bool firstTime = false;
 
-  getUserData() async {
+  Future getUserData() async {
     print('getUserData Function in Loading Screen');
     List<dynamic> myCategory = [];
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,9 +44,27 @@ class _LoadingScreenState extends State<LoadingScreen> {
       prefs.setStringList('category', zCategory);
       prefs.setString('documentid', document.documentID);
     });
+
+    await _store
+        .collection('Users')
+        .document(zDocumentID)
+        .collection('Friends')
+        .getDocuments()
+        .then((value) {
+      for (var i in value.documents) {
+        zFriends.add(i.data);
+        String frn = i.data['mail'];
+        print(frn);
+        zFriendsMail.add(frn);
+      }
+      prefs.setStringList('friends', zFriendsMail);
+    });
   }
 
-  checkUser() async {
+  Future checkUser() async {
+    setState(() {
+      zFriendsMail = [];
+    });
     print('Initial checking $zUserMail and $zUsername');
     await _store.collection('Users').getDocuments().then((value) {
       for (var i in value.documents) {

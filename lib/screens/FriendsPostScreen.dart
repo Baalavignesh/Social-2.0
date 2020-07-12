@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:newsocialmedia/screens2/CaptionAndImageScreen.dart';
+import 'package:newsocialmedia/reusables/PostCard.dart';
+import 'file:///D:/4.%20Projects/Flutter_App/new_social_media/lib/screens/CaptionAndImageScreen.dart';
 import 'package:newsocialmedia/services/constants.dart';
 import 'dart:async';
 import 'dart:io';
@@ -12,161 +15,96 @@ class FriendsPostScreen extends StatefulWidget {
   _FriendsPostScreenState createState() => _FriendsPostScreenState();
 }
 
-class _FriendsPostScreenState extends State<FriendsPostScreen> {
-  final picker = ImagePicker();
-  getImageCamera() async {
-    try {
-      final pickedFile = await picker.getImage(
-        source: ImageSource.camera,
-        imageQuality: 60,
-      );
+class _FriendsPostScreenState extends State<FriendsPostScreen>
+    with SingleTickerProviderStateMixin {
+  bool fetchingPost = false;
+  final _store = Firestore.instance;
+  ScrollController scrollController;
 
-      setState(() {
-        zImageToBeUploaded = File(pickedFile.path);
-      });
-      Navigator.pop(context);
-      Navigator.pushNamed(context, CaptionAndImageScreen.id);
-    } catch (e) {
-      print(e);
-    }
-  }
+  Future getFriendsPost() async {
+    print('Get Friends Post Function');
+    print(Timestamp.now());
+    print(DateTime.now().millisecondsSinceEpoch);
+    print(zFriendsMail);
+    print(zCategory);
+    for (var i in zFriendsMail) {
+      print(i);
+      await _store
+          .collection('Post')
+          .where('user', isEqualTo: i)
+          .where('post category', arrayContainsAny: zCategory)
+          .getDocuments()
+          .then((value) {
+        for (var i in value.documents) {
+//          print(i.data);
+          zFriendsPost.add(i.data);
+        }
 
-  getImageGallery() async {
-    try {
-      final pickedFile = await picker.getImage(
-        source: ImageSource.gallery,
-        imageQuality: 60,
-      );
-
-      setState(() {
-        zImageToBeUploaded = File(pickedFile.path);
-      });
-      Navigator.pop(context);
-      Navigator.pushNamed(context, CaptionAndImageScreen.id);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  bottomModal() {
-    return showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            child: new Wrap(
-              children: <Widget>[
-                new ListTile(
-                    leading: new Icon(Icons.image),
-                    title: new Text('Gallery'),
-                    onTap: () async {
-                      await getImageGallery();
-                    }),
-                new ListTile(
-                  leading: new Icon(Icons.camera_alt),
-                  title: new Text('Camera'),
-                  onTap: () {
-                    getImageCamera();
-                  },
-                ),
-              ],
-            ),
-          );
+        setState(() {
+          fetchingPost = true;
         });
+      });
+    }
   }
 
-  getFriendsPost() {}
+//      .orderBy('timestamp', descending: true)
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    scrollController = ScrollController()
+      ..addListener(() {
+//        print('1');
+        setDialVisible(scrollController.position.userScrollDirection ==
+            ScrollDirection.forward);
+      });
     print('Friends Post Screen');
     getFriendsPost();
   }
 
+  void setDialVisible(bool value) {
+    setState(() {
+      dialVisible = value;
+//      print(dialVisible);
+    });
+  }
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print('Friends Post Screen Deactivated');
+    zFriendsPost = [];
+    fetchingPost = true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kDarkBackground,
-      body: Column(
+    return Container(
+      child: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.indigo,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                    child: TextField(
-                      maxLines: null,
-                      decoration: InputDecoration(
-                        hintText: 'Say Something to People',
-                        hintStyle: TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                      onChanged: (value) {
-                        zUserMail = value;
-                      },
-                    ),
+//          topContainerFriendsTab(),
+          fetchingPost
+              ? Container(
+                  child: Expanded(
+                    child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: zFriendsPost.length,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context, int i) {
+                          return PostCard(
+                            name: zFriendsPost[i]['user'],
+                            isPortrait: zFriendsPost[i]['imagetype'],
+                            isImage: zFriendsPost[i]['is photo'],
+                            caption: zFriendsPost[i]['caption'],
+                            image: zFriendsPost[i]['url'],
+                            category: zFriendsPost[i]['post category'],
+                          );
+                        }),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(30, 10, 10, 30),
-                            child: CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Colors.white,
-                              child: Icon(
-                                FontAwesomeIcons.book,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              bottomModal();
-                            },
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(10, 10, 10, 30),
-                              child: CircleAvatar(
-                                radius: 25,
-                                backgroundColor: Colors.white,
-                                child: Icon(
-                                  FontAwesomeIcons.camera,
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 40, 30),
-                        child: CircleAvatar(
-                          backgroundColor: Colors.green,
-                          radius: 25,
-                          child: Icon(
-                            FontAwesomeIcons.solidPaperPlane,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-          )
+                )
+              : Text('Getting Post'),
         ],
       ),
     );

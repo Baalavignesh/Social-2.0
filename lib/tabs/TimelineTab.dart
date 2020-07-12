@@ -14,35 +14,7 @@ class _TimelineTabState extends State<TimelineTab> {
       child: Container(
         color: kBackground,
         child: Column(
-          children: <Widget>[
-            PostCard(
-              time: '21st Aug 2020, 10:32 PM',
-              name: 'Baalavignesh',
-              content: 'Hi. I am looking for Warzone players',
-              isImage: false,
-              isPortrait: false,
-              image: null,
-              caption: 'PAbleBoo21',
-            ),
-            PostCard(
-              time: '21st Aug 2020, 10:32 PM',
-              name: 'Baalavignesh',
-              content: 'Hi. I am looking for Warzone players',
-              isImage: true,
-              isPortrait: true,
-              image: 'images/trial1.jpg',
-              caption: 'PAbleBoo21',
-            ),
-            PostCard(
-              time: '21st Aug 2020, 10:32 PM',
-              name: 'Baalavignesh',
-              content: 'Hi. I am looking for Warzone players',
-              isImage: true,
-              isPortrait: false,
-              image: 'images/trial4.jpg',
-              caption: 'PAbleBoo21',
-            ),
-          ],
+          children: <Widget>[],
         ),
       ),
     );

@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:newsocialmedia/screens/CategoryScreen.dart';
 import 'package:newsocialmedia/screens/FriendsListScreen.dart';
 import 'package:newsocialmedia/screens/FriendsPostScreen.dart';
+import 'package:newsocialmedia/screens/FriendsUserScreen.dart';
 import 'package:newsocialmedia/screens/LoadingScreen.dart';
 import 'package:newsocialmedia/screens/MainRoutePage.dart';
 import 'package:newsocialmedia/screens/MapScreen.dart';
+import 'package:newsocialmedia/screens/PinScreen.dart';
 import 'package:newsocialmedia/screens/PublicPostScreen.dart';
 import 'package:newsocialmedia/screens/SignUpScreen.dart';
+import 'package:newsocialmedia/screens/UserProfileScreen.dart';
 import 'package:newsocialmedia/screens/UserProfileScreenNearMe.dart';
 import 'package:newsocialmedia/screens/UserProfileScreenRequest.dart';
 import 'package:newsocialmedia/screens/WelcomeScreen.dart';
-import 'screens2/CaptionAndImageScreen.dart';
+import 'screens/CaptionAndImageScreen.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,9 +41,12 @@ class _MyAppState extends State<MyApp> {
         FriendsPostScreen.id: (context) => FriendsPostScreen(),
         MapScreen.id: (context) => MapScreen(),
         FriendsListScreen.id: (context) => FriendsListScreen(),
+        UserProfileScreen.id: (context) => UserProfileScreen(),
         UserProfileScreenNearMe.id: (context) => UserProfileScreenNearMe(),
         UserProfileScreenRequest.id: (context) => UserProfileScreenRequest(),
+        FriendUserScreen.id: (context) => FriendUserScreen(),
         CaptionAndImageScreen.id: (context) => CaptionAndImageScreen(),
+        PinScreen.id: (context) => PinScreen(),
       },
     );
   }

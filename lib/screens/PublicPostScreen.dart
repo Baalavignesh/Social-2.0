@@ -13,32 +13,7 @@ class _PublicPostScreenState extends State<PublicPostScreen> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
-        children: <Widget>[
-          PostCard(
-            name: 'PAbleBoo21',
-            image: 'images/trial4.jpg',
-            isPortrait: false,
-            isImage: true,
-            caption:
-                'PAbleBoo21. Yo i am going to join Offline TV. I am happy to say this. DO subscribe to the channel...',
-          ),
-          PostCard(
-            name: 'PAbleBoo21',
-            image: 'images/trial2.jpg',
-            isPortrait: true,
-            isImage: true,
-            caption:
-                'PAbleBoo21. Yo i am going to join Offline TV. I am happy to say this. DO subscribe to the channel...',
-          ),
-          PostCard(
-            name: 'PAbleBoo21',
-            image: 'images/trial3.jpg',
-            isImage: true,
-            isPortrait: true,
-            caption:
-                'PAbleBoo21. Yo i am going to join Offline TV. I am happy to say this. DO subscribe to the channel...',
-          ),
-        ],
+        children: <Widget>[Text(' ')],
       ),
     );
   }

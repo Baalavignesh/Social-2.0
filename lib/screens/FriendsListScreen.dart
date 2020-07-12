@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:newsocialmedia/services/constants.dart';
-import 'package:newsocialmedia/tabs/FindFriendsTab.dart';
+import 'package:newsocialmedia/tabs/MyFriends.dart';
 import 'package:newsocialmedia/tabs/FriendRequestTab.dart';
 
 class FriendsListScreen extends StatefulWidget {
@@ -43,12 +43,12 @@ class _FriendsListScreenState extends State<FriendsListScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(FontAwesomeIcons.userFriends),
+                  Icon(FontAwesomeIcons.users),
                   SizedBox(
                     width: 20,
                   ),
                   Text(
-                    'Friend Request',
+                    'Friends',
                     style: kTextStyle,
                   ),
                 ],
@@ -58,12 +58,14 @@ class _FriendsListScreenState extends State<FriendsListScreen>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Icon(FontAwesomeIcons.users),
+                  Icon(
+                    FontAwesomeIcons.userFriends,
+                  ),
                   SizedBox(
                     width: 20,
                   ),
                   Text(
-                    'Near Me',
+                    'Friend Request',
                     style: kTextStyle,
                   ),
                 ],
@@ -77,8 +79,8 @@ class _FriendsListScreenState extends State<FriendsListScreen>
         child: TabBarView(
           controller: controller,
           children: [
+            MyFriendsTab(),
             FriendRequestTab(),
-            FindFriendsTab(),
           ],
         ),
       ),

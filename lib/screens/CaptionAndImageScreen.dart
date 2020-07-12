@@ -22,6 +22,10 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
   bool uploaded = false;
   String imageURL;
   bool uploading = false;
+  int oImageWidth;
+  int oImageHeight;
+  bool isPortrait;
+  bool miniWarning = false;
 
   Future uploadPhoto() async {
     setState(() {
@@ -34,8 +38,8 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
     print('Caption $zCaption');
     print('Is Photo $isPhoto');
     print(time);
-
-    String fileName = zUserMail + time.toString();
+    String fileName =
+        zUserMail + DateTime.now().millisecondsSinceEpoch.toString();
     print(fileName);
 
     final StorageReference firebaseStorageRef = _storage.ref().child(fileName);
@@ -50,11 +54,13 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
     print('after getting url');
     await _store.collection('Post').add({
       'user': zUserMail,
+      'username': zUsername,
       'caption': zCaption,
       'post category': zSelected,
       'is photo': isPhoto,
       'timestamp': time,
       'url': imageURL,
+      'imagetype': isPortrait,
     }).then((value) {
       setState(() {
         uploaded = true;
@@ -62,6 +68,33 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
       });
     });
     print('added to DB');
+  }
+
+  findDimension() async {
+    var decodedImage =
+        await decodeImageFromList(zImageToBeUploaded.readAsBytesSync());
+    oImageWidth = decodedImage.width;
+    oImageHeight = decodedImage.height;
+    print(decodedImage.width);
+    print(decodedImage.height);
+    if (oImageHeight > oImageWidth) {
+      print('Portrait Picture');
+      setState(() {
+        isPortrait = true;
+      });
+    } else {
+      print('Landscape');
+      setState(() {
+        isPortrait = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    findDimension();
   }
 
   @override
@@ -116,20 +149,37 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Container(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 40, 10, 10),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              zImageToBeUploaded,
-                              fit: BoxFit.fitWidth,
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.width,
+                      isPortrait
+                          ? Container(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 40, 10, 10),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.file(
+                                    zImageToBeUploaded,
+                                    fit: BoxFit.fitWidth,
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.width,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Container(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.file(
+                                    zImageToBeUploaded,
+                                    fit: BoxFit.contain,
+                                    width: MediaQuery.of(context).size.width,
+                                    height: MediaQuery.of(context).size.width,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                       Expanded(
                         child: Column(
                           children: <Widget>[
@@ -151,9 +201,24 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(15),
-                              child: Text(
-                                'Select Category (Max 3)',
-                                style: kTextStyle,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    'Select Category (Max 3)',
+                                    style: kTextStyle,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  miniWarning
+                                      ? Text(
+                                          'Select Atleast One',
+                                          style: kTextStyle.copyWith(
+                                              color: Colors.redAccent),
+                                        )
+                                      : Text(' '),
+                                ],
                               ),
                             ),
                             Padding(
@@ -175,7 +240,13 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
                                 child: GestureDetector(
                                   onTap: () {
                                     print(zSelected);
-                                    uploadPhoto();
+                                    if (zSelected.length == 0) {
+                                      setState(() {
+                                        miniWarning = true;
+                                      });
+                                    } else {
+                                      uploadPhoto();
+                                    }
                                   },
                                   child: Container(
                                     width: sWidth / 2,

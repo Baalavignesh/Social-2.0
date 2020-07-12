@@ -1,19 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:newsocialmedia/screens/CategoryScreen.dart';
-import 'package:newsocialmedia/screens/FriendsListScreen.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:newsocialmedia/screens/FriendsPostScreen.dart';
 import 'package:newsocialmedia/screens/MapScreen.dart';
 import 'package:newsocialmedia/screens/PublicPostScreen.dart';
-import 'package:newsocialmedia/screens/UserProfileScreenNearMe.dart';
-import 'package:newsocialmedia/screens/WelcomeScreen.dart';
-import 'package:newsocialmedia/services/MailAuth.dart';
+import 'package:newsocialmedia/screens/UserProfileScreen.dart';
 import 'package:newsocialmedia/services/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:location/location.dart';
 import 'package:geocoder/geocoder.dart';
+import 'dart:async';
+import 'dart:io';
+import 'CaptionAndImageScreen.dart';
 
 class MainRoutePage extends StatefulWidget {
   static const String id = 'MainRoutePage';
@@ -25,7 +26,9 @@ class _MainRoutePageState extends State<MainRoutePage>
     with SingleTickerProviderStateMixin {
   TabController controller;
   final _store = Firestore.instance;
-  getData() async {
+  final picker = ImagePicker();
+
+  Future getData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     zUsername = (prefs.getString('username'));
     zUserMail = (prefs.getString('mail'));
@@ -36,6 +39,28 @@ class _MainRoutePageState extends State<MainRoutePage>
     zCountry = (prefs.getString('country'));
     zDistrict = (prefs.getString('district'));
     zState = (prefs.getString('state'));
+    zFriendsMail = (prefs.getStringList('friends'));
+    print('dumb $zFriendsMail');
+    setState(() {
+      zFriendsMail = [];
+    });
+    await _store
+        .collection('Users')
+        .document(zDocumentID)
+        .collection('Friends')
+        .getDocuments()
+        .then((value) {
+      for (var i in value.documents) {
+        zFriends.add(i.data);
+        String frn = i.data['mail'];
+        print(frn);
+        zFriendsMail.add(frn);
+//        zFriendsMail.add(frn);
+      }
+    });
+
+    prefs.setStringList('friends', zFriendsMail);
+
     print(zDocumentID);
     print(zCategory);
     sHeight = MediaQuery.of(context).size.height;
@@ -100,6 +125,71 @@ class _MainRoutePageState extends State<MainRoutePage>
     }
   }
 
+  getImageCamera() async {
+    try {
+      final pickedFile = await picker.getImage(
+        source: ImageSource.camera,
+        imageQuality: 60,
+      );
+
+      setState(() {
+        zImageToBeUploaded = File(pickedFile.path);
+      });
+      Navigator.pop(context);
+      Navigator.pushNamed(context, CaptionAndImageScreen.id);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  getImageGallery() async {
+    try {
+      final pickedFile = await picker.getImage(
+        source: ImageSource.gallery,
+        imageQuality: 60,
+      );
+
+      setState(() {
+        zImageToBeUploaded = File(pickedFile.path);
+      });
+      Navigator.pop(context);
+      Navigator.pushNamed(context, CaptionAndImageScreen.id);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  bottomModal() {
+    return showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.image),
+                    title: new Text('Gallery'),
+                    onTap: () async {
+                      await getImageGallery();
+                    }),
+                new ListTile(
+                  leading: new Icon(Icons.camera_alt),
+                  title: new Text('Camera'),
+                  onTap: () {
+                    getImageCamera();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  getRadianFromDegree(double degree) {
+    double unitRadian = 57.295779513;
+    return degree / unitRadian;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -129,13 +219,7 @@ class _MainRoutePageState extends State<MainRoutePage>
         centerTitle: true,
         actions: <Widget>[
           new IconButton(
-            icon: new Icon(Icons.search),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, MainRoutePage.id);
-            },
-          ),
-          new IconButton(
-            icon: new Icon(Icons.mail),
+            icon: new Icon(FontAwesomeIcons.inbox),
             onPressed: () {},
           ),
         ],
@@ -192,114 +276,84 @@ class _MainRoutePageState extends State<MainRoutePage>
           ],
         ),
       ),
-      drawer: Drawer(
-        child: Container(
-          color: kDarkBackground,
-          child: ListView(
-            scrollDirection: Axis.vertical,
-            children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    height: 250,
-                    width: double.infinity,
-                    child: DrawerHeader(
-                      decoration: BoxDecoration(
-                        color: Colors.blueGrey,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: CircleAvatar(
-                              radius: 35,
-                              backgroundColor: kDarkBackground,
-                              child: Text(
-                                "P",
-                                style: TextStyle(fontSize: 40.0),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              zUsername,
-                              style: kTextStyle.copyWith(fontSize: 19),
-                            ),
-                          ),
-                          Text(
-                            zUserMail,
-                            style: kTextStyle.copyWith(fontSize: 15),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  ListTile(
-                      title: ListData(text: 'Home', icon: Icon(Icons.home))),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, FriendsListScreen.id);
-                    },
-                    child: ListTile(
-                        title: ListData(
-                            text: 'Friends', icon: Icon(Icons.people))),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        secondTime = true;
-                      });
-                      Navigator.pushNamed(context, CategoryScreen.id);
-                    },
-                    child: ListTile(
-                        title: ListData(
-                            text: 'My Interest',
-                            icon: Icon(Icons.playlist_add_check))),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, UserProfileScreenNearMe.id);
-                    },
-                    child: ListTile(
-                        title: ListData(
-                            text: 'My Profile', icon: Icon(Icons.face))),
-                  ),
-                  ListTile(
-                      title: ListData(
-                          text: 'Settings', icon: Icon(Icons.settings))),
-                  GestureDetector(
-                    onTap: () async {
-                      AuthService().signOut();
-                      secondTime = false;
-                      SharedPreferences preferences =
-                          await SharedPreferences.getInstance();
-                      preferences.clear();
-                      Navigator.pushReplacementNamed(context, WelcomeScreen.id);
-                    },
-                    child: ListTile(
-                        title: ListData(
-                            text: 'Logout',
-                            icon: FaIcon(FontAwesomeIcons.signOutAlt))),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
       body: Container(
         color: kDarkBackground,
-        child: TabBarView(
-          controller: controller,
-          children: [
-            PublicPostScreen(),
-            FriendsPostScreen(),
-            MapScreen(),
+        child: Stack(
+          children: <Widget>[
+            TabBarView(
+              controller: controller,
+              children: [
+                PublicPostScreen(),
+                FriendsPostScreen(),
+                MapScreen(),
+              ],
+            ),
           ],
         ),
+      ),
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.home_menu,
+        onOpen: () => print('OPENING DIAL'),
+        onClose: () => print('DIAL CLOSED'),
+        overlayColor: kBackground,
+        visible: dialVisible,
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
+        curve: Curves.easeIn,
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.camera),
+            label: 'Post',
+            labelBackgroundColor: Colors.black,
+            onTap: () {
+              bottomModal();
+            },
+            backgroundColor: Colors.redAccent,
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.person),
+            label: 'Profile',
+            labelBackgroundColor: Colors.black,
+            onTap: () {
+              Navigator.pushNamed(context, UserProfileScreen.id);
+            },
+            backgroundColor: Colors.green,
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.brush),
+            label: 'Say Something',
+            labelBackgroundColor: Colors.black,
+            onTap: () {},
+            backgroundColor: Colors.indigoAccent,
+          ),
+        ],
+        marginRight: 30,
+        marginBottom: 30,
+      ),
+    );
+  }
+}
+
+class CircularButton extends StatelessWidget {
+  final width;
+  final height;
+  final icon;
+  final color;
+  final onPress;
+
+  CircularButton(
+      {this.height, this.width, this.color, this.icon, this.onPress});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      width: width,
+      height: height,
+      child: IconButton(
+        icon: icon,
+        enableFeedback: true,
+        onPressed: onPress,
       ),
     );
   }

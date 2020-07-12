@@ -22,7 +22,6 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
   final _store = Firestore.instance;
   bool accepted = false;
   bool show = false;
-  String requestDocID;
   String tempMail = aFriendRequest[clickedIndex]['mail'];
 
   Future getUserData() async {}
@@ -95,6 +94,13 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
     print('User Profile Screen');
     getUserData();
     createList();
+  }
+
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    print('called');
   }
 
   @override
@@ -201,8 +207,6 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
                                       });
 
                                       // Remove my Friend
-                                      //Get Document ID
-                                      String myFriend;
                                       await _store
                                           .collection('Users')
                                           .document(zDocumentID)
@@ -214,27 +218,11 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
                                           .getDocuments()
                                           .then((value) {
                                         for (var i in value.documents) {
-                                          myFriend = i.documentID;
+                                          i.reference.delete();
                                         }
                                       });
 
-                                      // Delete Document ID
-                                      await _store
-                                          .collection('Users')
-                                          .document(zDocumentID)
-                                          .collection('Friends')
-                                          .document(myFriend)
-                                          .delete();
-
-                                      _store
-                                          .collection('Users')
-                                          .where('mail', isEqualTo: zUserMail)
-                                          .getDocuments()
-                                          .then((value) =>
-                                              value.documents.remove(value));
                                       // Remove his Friend
-                                      String removeHisFriend;
-                                      print('reqadad $requestDocID');
                                       await _store
                                           .collection('Users')
                                           .document(
@@ -244,21 +232,9 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
                                           .getDocuments()
                                           .then((value) {
                                         for (var i in value.documents) {
-                                          print(i);
-                                          setState(() {
-                                            removeHisFriend = i.documentID;
-                                          });
-                                          print(removeHisFriend);
+                                          i.reference.delete();
                                         }
                                       });
-
-                                      await _store
-                                          .collection('Users')
-                                          .document(
-                                              aFriendRequestDocID[clickedIndex])
-                                          .collection('Friends')
-                                          .document(removeHisFriend)
-                                          .delete();
                                     },
                                     child: Container(
                                         width: double.infinity,
@@ -277,15 +253,12 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
                                   )
                                 : GestureDetector(
                                     onTap: () async {
+                                      // Accept Function
                                       setState(() {
                                         accepted = true;
                                       });
 
-                                      // Accept Function
-
-                                      String tempDocID =
-                                          aFriendRequestDocID[clickedIndex];
-                                      print('tempMail : $tempMail');
+                                      // Deleting Friend Request From my Profile
                                       await _store
                                           .collection('Users')
                                           .document(zDocumentID)
@@ -295,23 +268,9 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
                                           .getDocuments()
                                           .then((value) {
                                         for (var i in value.documents) {
-                                          print(
-                                              'i data ${i.data} and i doc ${i.documentID}');
-                                          setState(() {
-                                            requestDocID = i.documentID;
-                                          });
+                                          i.reference.delete();
                                         }
                                       });
-
-                                      // Getting Document ID of the Request Received
-
-                                      // Deleting Friend Request From my Profile
-                                      await _store
-                                          .collection('Users')
-                                          .document(zDocumentID)
-                                          .collection('Friend Request')
-                                          .document(requestDocID)
-                                          .delete();
 
                                       // Adding to My Friend List
                                       await _store
@@ -323,7 +282,8 @@ class _UserProfileScreenRequestState extends State<UserProfileScreenRequest> {
                                       // Adding to his Friend List
                                       await _store
                                           .collection('Users')
-                                          .document(tempDocID)
+                                          .document(
+                                              aFriendRequestDocID[clickedIndex])
                                           .collection('Friends')
                                           .add({'mail': zUserMail});
                                     },
