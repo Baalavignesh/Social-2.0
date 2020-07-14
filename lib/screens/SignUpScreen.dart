@@ -58,6 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: AnimatedContainer(
           duration: _animationDuration,
           decoration: BoxDecoration(
@@ -78,7 +79,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     width: 120,
                     child: Hero(
                       tag: 'logo',
-                      child: Image.asset('images/logomain.png'),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage(
+                          'images/social logo.png',
+                        ),
+                      ),
                     ),
                   ),
                   Padding(

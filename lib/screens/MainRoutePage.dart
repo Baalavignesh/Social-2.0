@@ -28,45 +28,6 @@ class _MainRoutePageState extends State<MainRoutePage>
   final _store = Firestore.instance;
   final picker = ImagePicker();
 
-  Future getData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    zUsername = (prefs.getString('username'));
-    zUserMail = (prefs.getString('mail'));
-    zCategory = (prefs.getStringList('category'));
-    zDocumentID = (prefs.getString('documentid'));
-    zLatitude = (prefs.getDouble('latitude'));
-    zLongitude = (prefs.getDouble('longitude'));
-    zCountry = (prefs.getString('country'));
-    zDistrict = (prefs.getString('district'));
-    zState = (prefs.getString('state'));
-    zFriendsMail = (prefs.getStringList('friends'));
-    print('dumb $zFriendsMail');
-    setState(() {
-      zFriendsMail = [];
-    });
-    await _store
-        .collection('Users')
-        .document(zDocumentID)
-        .collection('Friends')
-        .getDocuments()
-        .then((value) {
-      for (var i in value.documents) {
-        zFriends.add(i.data);
-        String frn = i.data['mail'];
-        print(frn);
-        zFriendsMail.add(frn);
-//        zFriendsMail.add(frn);
-      }
-    });
-
-    prefs.setStringList('friends', zFriendsMail);
-
-    print(zDocumentID);
-    print(zCategory);
-    sHeight = MediaQuery.of(context).size.height;
-    sWidth = MediaQuery.of(context).size.width;
-  }
-
   askLocation() async {
     Location location = new Location();
 
@@ -195,7 +156,6 @@ class _MainRoutePageState extends State<MainRoutePage>
     super.initState();
     controller = TabController(vsync: this, length: 3);
     print('MainRoutePage Screen');
-    getData();
     askLocation();
   }
 

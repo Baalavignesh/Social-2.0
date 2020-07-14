@@ -12,7 +12,7 @@ class FriendBoxStateful extends StatefulWidget {
   final uDistrict;
   final uState;
   final uCategory;
-  final nearMe;
+  final requestFriend;
   final uMail;
   FriendBoxStateful(
       {this.profilePic,
@@ -20,7 +20,7 @@ class FriendBoxStateful extends StatefulWidget {
       this.uDistrict,
       this.uState,
       this.uCategory,
-      this.nearMe,
+      this.requestFriend,
       this.uMail});
   @override
   _FriendBoxStatefulState createState() => _FriendBoxStatefulState();
@@ -36,9 +36,15 @@ class _FriendBoxStatefulState extends State<FriendBoxStateful> {
         padding: const EdgeInsets.all(12),
         child: GestureDetector(
           onTap: () {
-            clickedIndex = zFriendsMail.indexOf(this.widget.uMail);
-            print(clickedIndex);
-            Navigator.pushNamed(context, FriendUserScreen.id);
+            if (this.widget.requestFriend == true) {
+              clickedIndex = aFriendRequestMail.indexOf(this.widget.uMail);
+              print(clickedIndex);
+              Navigator.pushNamed(context, UserProfileScreenRequest.id);
+            } else {
+              clickedIndex = zFriendsMail.indexOf(this.widget.uMail);
+              print(clickedIndex);
+              Navigator.pushNamed(context, FriendUserScreen.id);
+            }
           },
           child: Container(
             decoration: BoxDecoration(

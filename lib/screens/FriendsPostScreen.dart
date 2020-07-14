@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:newsocialmedia/reusables/PostCard.dart';
@@ -20,30 +21,54 @@ class _FriendsPostScreenState extends State<FriendsPostScreen>
   bool fetchingPost = false;
   final _store = Firestore.instance;
   ScrollController scrollController;
+  bool noFriends = false;
 
   Future getFriendsPost() async {
+    setState(() {
+      noFriends = false;
+    });
     print('Get Friends Post Function');
     print(Timestamp.now());
     print(DateTime.now().millisecondsSinceEpoch);
     print(zFriendsMail);
     print(zCategory);
-    for (var i in zFriendsMail) {
-      print(i);
-      await _store
-          .collection('Post')
-          .where('user', isEqualTo: i)
-          .where('post category', arrayContainsAny: zCategory)
-          .getDocuments()
-          .then((value) {
-        for (var i in value.documents) {
-//          print(i.data);
-          zFriendsPost.add(i.data);
-        }
 
-        setState(() {
-          fetchingPost = true;
-        });
+    print('$zFriendsMail yea the valee');
+    print(zFriendsMail.length);
+    if (zFriendsMail.length == 0) {
+      print('inside');
+      setState(() {
+        noFriends = true;
       });
+    } else {
+      for (var i in zFriendsMail) {
+        print(i);
+
+        await _store
+            .collection('Post')
+            .where('user'[0], isEqualTo: i)
+            .getDocuments()
+            .then((value) {
+          for (var i in value.documents) {
+            print(i.data);
+          }
+        });
+        await _store
+            .collection('Post')
+            .where('user', isEqualTo: i)
+            .where('post category', arrayContainsAny: zCategory)
+            .getDocuments()
+            .then((value) {
+          for (var i in value.documents) {
+            print(i.data);
+            zFriendsPost.add(i.data);
+          }
+
+          setState(() {
+            fetchingPost = true;
+          });
+        });
+      }
     }
   }
 
@@ -82,31 +107,57 @@ class _FriendsPostScreenState extends State<FriendsPostScreen>
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: <Widget>[
+        child: fetchingPost
+            ? Column(
+                children: <Widget>[
 //          topContainerFriendsTab(),
-          fetchingPost
-              ? Container(
-                  child: Expanded(
-                    child: ListView.builder(
-                        controller: scrollController,
-                        itemCount: zFriendsPost.length,
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, int i) {
-                          return PostCard(
-                            name: zFriendsPost[i]['user'],
-                            isPortrait: zFriendsPost[i]['imagetype'],
-                            isImage: zFriendsPost[i]['is photo'],
-                            caption: zFriendsPost[i]['caption'],
-                            image: zFriendsPost[i]['url'],
-                            category: zFriendsPost[i]['post category'],
-                          );
-                        }),
-                  ),
-                )
-              : Text('Getting Post'),
-        ],
-      ),
-    );
+                  Container(
+                    child: Expanded(
+                      child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: zFriendsPost.length,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext context, int i) {
+                            return PostCard(
+                              name: zFriendsPost[i]['username'],
+                              isPortrait: zFriendsPost[i]['imagetype'],
+                              isImage: zFriendsPost[i]['is photo'],
+                              caption: zFriendsPost[i]['caption'],
+                              image: zFriendsPost[i]['url'],
+                              category: zFriendsPost[i]['post category'],
+                            );
+                          }),
+                    ),
+                  )
+                ],
+              )
+            : noFriends
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'No Friends',
+                        style: kTextStyle.copyWith(fontSize: 20),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Center(
+                        child: Text(
+                          'Loading Friends Post',
+                          style: kTextStyle.copyWith(fontSize: 18),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SpinKitWave(
+                        color: Colors.white,
+                        size: 50.0,
+                      ),
+                    ],
+                  ));
   }
 }

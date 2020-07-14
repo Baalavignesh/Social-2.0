@@ -101,6 +101,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
   Color kBackgroundTop;
   Color kBackgroundBottom;
   bool isSelected = false;
+  String dp = '';
+
 //  final String assetName = 'images/blob.svg';
 
   backgroundAnimation() {
@@ -416,6 +418,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                               'mail': zUserMail,
                               'username': zUsername,
                               'category': zCategory,
+                              'private': false,
+                              'url': dp,
                             });
                             Navigator.pushReplacementNamed(
                                 context, LoadingScreen.id);

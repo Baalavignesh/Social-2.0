@@ -31,6 +31,8 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
     setState(() {
       uploaded = true;
     });
+    List<String> userArray = [];
+    userArray.add(zUserMail);
     time = Timestamp.now();
 
     print('UserMail $zUserMail');
@@ -53,7 +55,7 @@ class _CaptionAndImageScreenState extends State<CaptionAndImageScreen> {
 
     print('after getting url');
     await _store.collection('Post').add({
-      'user': zUserMail,
+      'user': userArray,
       'username': zUsername,
       'caption': zCaption,
       'post category': zSelected,

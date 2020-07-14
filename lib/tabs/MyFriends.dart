@@ -14,12 +14,16 @@ class MyFriendsTab extends StatefulWidget {
 class _MyFriendsTabState extends State<MyFriendsTab> {
   final _store = Firestore.instance;
   bool gotFriends = false;
+  String information = 'Loading...';
 
   Future getFriends() async {
-    print(zDocumentID);
+    print('getFriends Function');
+//    print('doc id$zDocumentID');
 
     setState(() {
       zFriendsMail = [];
+      zFriends = [];
+      gotFriends = false;
     });
 
     await _store
@@ -29,26 +33,40 @@ class _MyFriendsTabState extends State<MyFriendsTab> {
         .getDocuments()
         .then((value) {
       for (var i in value.documents) {
-        print(i.data);
+//        print(i.data);
         zFriendsMail.add(i.data['mail']);
       }
     });
 
-    for (var i in zFriendsMail) {
-      await _store
-          .collection('Users')
-          .where('mail', isEqualTo: i)
-          .getDocuments()
-          .then((value) {
-        for (var i in value.documents) {
-          print(i.data);
-          zFriends.add(i.data);
-          zFriendsDocID.add(i.documentID);
-        }
-      });
+    print('Friends Mail $zFriendsMail');
+    if (zFriendsMail.length == 0) {
       setState(() {
-        gotFriends = true;
+        information = 'No Friends';
       });
+    } else {
+      for (var i in zFriendsMail) {
+        await _store
+            .collection('Users')
+            .where('mail', isEqualTo: i)
+            .getDocuments()
+            .then((value) {
+          for (var i in value.documents) {
+//          print(i.data);
+            setState(() {
+              zFriends.add(i.data);
+              zFriendsDocID.add(i.documentID);
+            });
+          }
+          print('$zFriends and ${zFriends.length}');
+        });
+        if (zFriends.length == 0 || zFriends == null) {
+          print('still adding');
+        } else {
+          setState(() {
+            gotFriends = true;
+          });
+        }
+      }
     }
   }
 
@@ -57,15 +75,15 @@ class _MyFriendsTabState extends State<MyFriendsTab> {
     // TODO: implement initState
     super.initState();
     print('My Friends');
+    zFriends = [];
     getFriends();
-    print(zFriends);
   }
 
   @override
   void deactivate() {
     // TODO: implement deactivate
     super.deactivate();
-    print('done');
+//    print('done');
     zFriends = [];
     gotFriends = false;
   }
@@ -75,30 +93,43 @@ class _MyFriendsTabState extends State<MyFriendsTab> {
     return gotFriends
         ? Container(
             child: ListView.builder(
-                itemCount: zFriends.length,
-                scrollDirection: Axis.vertical,
-                itemBuilder: (BuildContext context, int i) {
-                  // Turning the List to String to Display in Box
-                  List temp = zFriends[i]['category'];
-                  print(temp);
-                  var concatenate = StringBuffer();
-                  temp.forEach((item) {
-                    concatenate.write(' $item,');
-                  });
-                  String cat = concatenate.toString();
-                  cat = cat.substring(0, cat.length - 1);
+              itemCount: zFriends.length,
+              scrollDirection: Axis.vertical,
+              itemBuilder: (BuildContext context, int i) {
+                // Turning the List to String to Display in Box
+//                print(i);
+//                print(zFriends.length);
+//                print('0 is ${zFriends[0]}');
 
-                  return FriendBoxStateful(
-                    uFriend: zFriends[i]['username'],
-                    uCategory: cat,
-                    uDistrict: zFriends[i]['district'],
-                    uState: zFriends[i]['state'],
-                    nearMe: false,
-                    uMail: zFriends[i]['mail'],
-                  );
-                }))
-        : Container(
-            child: Text('loading'),
+//                print(zFriends[i]['category']);
+                String cat;
+
+                var concatenate = StringBuffer();
+                zFriends[i]['category'].forEach((item) {
+                  concatenate.write(' $item,');
+                });
+                cat = concatenate.toString();
+                cat = cat.substring(0, cat.length - 1);
+
+                return FriendBoxStateful(
+                  uFriend: zFriends[i]['username'],
+                  uCategory: cat,
+                  uDistrict: zFriends[i]['district'],
+                  uState: zFriends[i]['state'],
+                  requestFriend: false,
+                  uMail: zFriends[i]['mail'],
+                );
+              },
+            ),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                information,
+                style: kTextStyle.copyWith(fontSize: 20),
+              ),
+            ],
           );
   }
 }

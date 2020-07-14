@@ -40,6 +40,7 @@ class _MapScreenState extends State<MapScreen> {
           uNearMe.add(i.data);
           uNearMeDocID.add(i.documentID);
           uNearMeName.add(i.data['username']);
+          uNearMeMail.add('mail');
         }
       }
     });
@@ -55,6 +56,7 @@ class _MapScreenState extends State<MapScreen> {
           uNearMe.add(i.data);
           uNearMeDocID.add(i.documentID);
           uNearMeName.add(i.data['username']);
+          uNearMeMail.add('mail');
         }
       }
     });
@@ -70,6 +72,7 @@ class _MapScreenState extends State<MapScreen> {
           uNearMe.add(i.data);
           uNearMeDocID.add(i.documentID);
           uNearMeName.add(i.data['username']);
+          uNearMeMail.add('mail');
         }
       }
     });

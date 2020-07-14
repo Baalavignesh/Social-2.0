@@ -1,14 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:newsocialmedia/reusables/ProfileCategoryBox.dart';
 import 'package:newsocialmedia/reusables/TinyPost.dart';
 import 'package:newsocialmedia/services/constants.dart';
-
-import 'package:newsocialmedia/tabs/PostTab.dart';
-import 'package:newsocialmedia/tabs/TimelineTab.dart';
 
 class FriendUserScreen extends StatefulWidget {
   static const String id = 'FriendUserScreen';
@@ -32,6 +27,7 @@ class _FriendUserScreenState extends State<FriendUserScreen> {
 
     String tempCategory;
 
+    print(zFriends);
     for (var i = 0; i < zFriends[clickedIndex]['category'].length; i++) {
       tempCategory = zFriends[clickedIndex]['category'][i];
 //      print(i);

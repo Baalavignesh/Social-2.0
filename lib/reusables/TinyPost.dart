@@ -12,8 +12,6 @@ class TinyPost extends StatefulWidget {
 class _TinyPostState extends State<TinyPost> {
   @override
   Widget build(BuildContext context) {
-    print(this.widget.image);
-    print(this.widget.isPotrait);
     return Container(
       child: Padding(
         padding: const EdgeInsets.all(5),

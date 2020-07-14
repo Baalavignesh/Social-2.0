@@ -43,10 +43,17 @@ class PostCard extends StatelessWidget {
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Container(
-                                height: 50,
-                                width: 50,
-                                child: Image.asset('images/logomain.png')),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  child: CircleAvatar(
+                                    radius: 5,
+                                    backgroundImage: NetworkImage(
+                                        'https://firebasestorage.googleapis.com/v0/b/social-2-e4146.appspot.com/o/defaultOthers.png?alt=media&token=e508143a-09f1-46ca-83ca-35a666e0cc2a'),
+                                  )),
+                            ),
                             Padding(
                               padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
                               child: Text(

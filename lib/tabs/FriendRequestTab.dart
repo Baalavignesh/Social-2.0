@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:newsocialmedia/reusables/FriendsBoxReusable.dart';
+import 'package:newsocialmedia/reusables/FriendsBoxReusableStateful.dart';
 import 'package:newsocialmedia/services/constants.dart';
 import 'package:newsocialmedia/tabs/FriendsBoxReusable2.dart';
 
@@ -13,15 +14,17 @@ class FriendRequestTab extends StatefulWidget {
 class _FriendRequestTabState extends State<FriendRequestTab> {
   final _store = Firestore.instance;
   List<String> requestReceived = [];
-
+  String information = 'Loading...';
   bool created = false;
 
   Future getFriendRequest() async {
     setState(() {
       aFriendRequestDocID = [];
+      requestReceived = [];
       aFriendRequest = [];
       aFriendRequestName = [];
       aFriendRequestList = [];
+      created = false;
     });
     print('get friend request');
     await _store
@@ -30,69 +33,45 @@ class _FriendRequestTabState extends State<FriendRequestTab> {
         .collection('Friend Request')
         .getDocuments()
         .then((value) {
-      for (var i = 0; i < value.documents.length; i++) {
-        print('request received $i');
-        print(value.documents[i].data['requestMail']);
-        requestReceived.add(value.documents[i].data['requestMail']);
+      for (var i in value.documents) {
+        print('request received ${i.data}');
+        print(i.data['requestMail']);
+        requestReceived.add(i.data['requestMail']);
       }
+      print('request received has $requestReceived');
     });
-    for (var i = 0; i < requestReceived.length; i++) {
-      print(i);
-      await _store
-          .collection('Users')
-          .where('mail', isEqualTo: requestReceived[i])
-          .getDocuments()
-          .then((value) {
-        for (var i in value.documents) {
-          aFriendRequest.add(i.data);
-          print(i.data['username']);
-          aFriendRequestName.add(i.data['username']);
-          aFriendRequestDocID.add(i.documentID);
-        }
-      });
-    }
-    print('after that');
-    print(aFriendRequest);
-    if (aFriendRequestName.length != 0) {
-      print('inside');
-      print(aFriendRequestName.length);
-      createFriendRequest();
-    }
-  }
 
-  createFriendRequest() {
-    print('create list');
-    for (var i = 0; i < aFriendRequest.length; i++) {
-      List temp = aFriendRequest[i]['category'];
-
-      // Turning the List to String to Display in Box
-      var concatenate = StringBuffer();
-      temp.forEach((item) {
-        concatenate.write(' $item,');
-      });
-      String cat = concatenate.toString();
-      cat = cat.substring(0, cat.length - 1);
-
-      bool nearTab = false;
-      Container uList = friendsBox(
-          FaIcon(FontAwesomeIcons.smile),
-          aFriendRequest[i]['username'],
-          aFriendRequest[i]['district'],
-          aFriendRequest[i]['state'],
-          cat,
-          context,
-          nearTab);
-      aFriendRequestList.add(uList);
-    }
-    print(aFriendRequestName);
-    print(aFriendRequestDocID);
-    if (aFriendRequestName == []) {
-      print('nothing');
-    }
-    if (aFriendRequestName != []) {
+    if (requestReceived.length == 0) {
       setState(() {
-        created = true;
+        information = 'No Friend Request';
       });
+    } else {
+      for (var i = 0; i < requestReceived.length; i++) {
+        print(i);
+        await _store
+            .collection('Users')
+            .where('mail', isEqualTo: requestReceived[i])
+            .getDocuments()
+            .then((value) {
+          for (var i in value.documents) {
+            aFriendRequest.add(i.data);
+            print(i.data['username']);
+            aFriendRequestName.add(i.data['username']);
+            aFriendRequestDocID.add(i.documentID);
+            aFriendRequestMail.add(i.data['mail']);
+          }
+        });
+      }
+      print('after that');
+      print('show only my friends $aFriendRequest');
+      if (aFriendRequestName.length != 0) {
+        print('inside');
+        print(aFriendRequestName.length);
+        setState(() {
+          created = true;
+          print('state is set $created');
+        });
+      }
     }
   }
 
@@ -113,26 +92,46 @@ class _FriendRequestTabState extends State<FriendRequestTab> {
   void deactivate() {
     // TODO: implement deactivate
     print('Friend Request Screen Deactivate Called');
+    created = false;
     super.deactivate();
-    aFriendRequestDocID = [];
-    aFriendRequest = [];
-    aFriendRequestName = [];
-    aFriendRequestList = [];
   }
 
   @override
   Widget build(BuildContext context) {
     return created
-        ? SingleChildScrollView(
-            child: Column(
-              children: aFriendRequestList,
+        ? Container(
+            child: ListView.builder(
+              itemCount: aFriendRequest.length,
+              scrollDirection: Axis.vertical,
+              itemBuilder: (BuildContext context, int i) {
+                // Turning the List to String to Display in Box
+
+                print('$i length is ${aFriendRequest.length}');
+                String cat;
+
+                var concatenate = StringBuffer();
+                aFriendRequest[i]['category'].forEach((item) {
+                  concatenate.write(' $item,');
+                });
+                cat = concatenate.toString();
+                cat = cat.substring(0, cat.length - 1);
+
+                return FriendBoxStateful(
+                  uFriend: aFriendRequest[i]['username'],
+                  uCategory: cat,
+                  uDistrict: aFriendRequest[i]['district'],
+                  uState: aFriendRequest[i]['state'],
+                  requestFriend: true,
+                  uMail: aFriendRequest[i]['mail'],
+                );
+              },
             ),
           )
         : Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'No Friend Request',
+                information,
                 style: kTextStyle.copyWith(fontSize: 20),
               ),
             ],

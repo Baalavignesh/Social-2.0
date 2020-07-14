@@ -40,11 +40,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     kBackgroundBottom = Color(0xFF011627);
   }
 
+  clearData() {
+    print('clear data');
+    setState(() {
+      zCategory = [];
+      zSelected = [];
+      zMyPost = [];
+      uNearMe = [];
+      uNearMeName = [];
+      uNearMeDocID = [];
+      uNearMeList = [];
+      aFriendRequest = [];
+      aFriendRequestDocID = [];
+      aFriendRequestName = [];
+      aFriendRequestList = [];
+      zFriendsMail = [];
+      zFriends = [];
+      zFriendsDocID = [];
+      zFriendsPost = [];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     print('Welcome Screen');
     backgroundAnimation();
+    clearData();
   }
 
   @override
@@ -85,7 +107,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     width: 100,
                     child: Hero(
                       tag: 'logo',
-                      child: Image.asset('images/logomain.png'),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage(
+                          'images/social logo.png',
+                        ),
+                      ),
                     ),
                   ),
                   Padding(

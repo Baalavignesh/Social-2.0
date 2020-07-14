@@ -21,17 +21,19 @@ bool back = false;
 
 bool isMailVerified;
 String nEmail, nPassword;
-String zUsername = 'Baalavignesh';
-String zUserMail = 'baalavignesh21@gmail.com';
-String zPassword = 'asdfghjkl';
+String zUsername;
+String zUserMail;
+String zPassword;
 String zDocumentID;
 List<String> zCategory = [];
-String zCountry, zState = 'Tamil Nadu', zDistrict = 'Chennai';
+String zCountry, zState, zDistrict;
 double zLatitude, zLongitude;
 File zImageToBeUploaded;
 List<String> zSelected = [];
 String zCaption = ' ';
 List<Map<String, dynamic>> zMyPost = [];
+bool zPublic = false;
+String zURL;
 
 String errorMessages = " ";
 bool warning = false;
@@ -44,6 +46,7 @@ bool dialVisible = true;
 
 List<Map<String, dynamic>> uNearMe = [];
 List<String> uNearMeName = [];
+List<String> uNearMeMail = [];
 List<String> uNearMeDocID = [];
 List<Container> uNearMeList = [];
 
@@ -53,6 +56,7 @@ List<Map<String, dynamic>> aFriendRequest = [];
 List<String> aFriendRequestName = [];
 List<String> aFriendRequestDocID = [];
 List<Container> aFriendRequestList = [];
+List<String> aFriendRequestMail = [];
 
 // Friends and Chat
 
@@ -60,3 +64,7 @@ List<Map<String, dynamic>> zFriends = [];
 List<String> zFriendsMail = [];
 List<String> zFriendsDocID = [];
 List<Map<String, dynamic>> zFriendsPost = [];
+
+// Public Post
+
+List<String> zPublicPostMail = [];

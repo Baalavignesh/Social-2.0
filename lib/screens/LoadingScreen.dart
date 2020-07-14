@@ -19,6 +19,9 @@ class _LoadingScreenState extends State<LoadingScreen> {
   bool firstTime = false;
 
   Future getUserData() async {
+    setState(() {
+      zCategory = [];
+    });
     print('getUserData Function in Loading Screen');
     List<dynamic> myCategory = [];
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -34,6 +37,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
       print(doc);
       zUsername = doc['username'];
       myCategory = doc['category'];
+      zURL = doc['url'];
       for (var i = 0; i < myCategory.length; i++) {
         print(i);
         zCategory.add(myCategory[i]);
@@ -43,6 +47,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
       prefs.setString('username', zUsername);
       prefs.setStringList('category', zCategory);
       prefs.setString('documentid', document.documentID);
+      prefs.setString('url', zURL);
+      prefs.setBool('private', zPublic);
     });
 
     await _store
