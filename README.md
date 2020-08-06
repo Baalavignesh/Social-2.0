@@ -24,7 +24,7 @@ Node.js
 
 Let's talk about the procedure of using the Application and signing up.  You sign in using your Email ID and a new password. After verifying the Mail sent to you, you can start using the Application. Initially we ask for all the points of interest and small information to get into the Application Quickly. After your inside, you can straight away look at people near you (Only district is shown to maintain your privacy). Send Friend requests, talk to them, like, comment to their post. The best part of the Application is the post that is being sent to you. While a person uploads a photo we will ask which category the photo being posted is about. Let’s demonstrate this with an example.
 
-	Consider a person A with interest in Games and Coding. Another person B is having an interest in Coding and Books. If the person A and B are friends. While person A posting a photo
-About a game with a point of interest as Gaming. Person 2 won’t receive that post since it doesn't come into the interest of person B. 
+	Consider a person A with interest in Games and Coding. Another person B is having an interest in Coding and Books. If the person A and B are friends. While person A posting a photo about a game with a point of interest as Gaming. Person 2 won’t receive that post since it doesn't come into the interest of person B. 
+
 
 This Application is not clumsy with 1000 of posts which are not of your interest. This Application will keep expanding with features in future like stories, snaps, news, and more. 
